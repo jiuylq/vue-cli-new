@@ -25,41 +25,103 @@ npm run test:unit
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Multi-page
+多页面配置
+https://juejin.im/post/5c0b8d74f265da6115109d68#heading-26
+https://juejin.im/post/5dd8a8c2518825731327f748
+https://juejin.im/post/5d5b6c4651882503585c9c1a
+https://cli.vuejs.org/zh/config/#pages
 
-https://juejin.im/post/5c3c544c6fb9a049d37f5903#heading-2
-https://juejin.im/post/5cab64ce5188251b19486041#heading-5
-https://cn.vuejs.org/v2/guide/components-registration.html#%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E5%85%A8%E5%B1%80%E6%B3%A8%E5%86%8C
-https://juejin.im/post/5c4a6fcd518825469414e062#heading-22
-https://juejin.im/post/5d130b9a518825670124a721#heading-6
-https://juejin.im/post/5d8180f96fb9a06b04723363
-https://blog.csdn.net/qq_39953537/article/details/102759821?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight
+``` javascript
+let path = require('path')
+let glob = require('glob')
+let mock = require('./src/mock/index.json');
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+//配置pages多页面获取当前文件夹下的html和js
+function getEntry(globPath) {
+	let entries = {};
+	glob.sync(globPath).forEach(function(entry) {
+		var tmp = entry.split('/').splice(-3);
+		entries[tmp[1]] = {
+			entry: 'src/' + tmp[0] + '/' + tmp[1] + '/' + 'index.js',
+			template: 'src/' + tmp[0] + '/' + tmp[1] + '/' + 'index.html',
+			filename: tmp[1] + '.html'
+		};
+	});
+	return entries;
+}
 
+let pages = getEntry('./src/pages/**?/*.html');
 
-1、全局自动注册组件（完成）
+module.exports = {
+	lintOnSave: false, 
+	baseUrl: process.env.NODE_ENV === "production" ? 'https://www.baidu.com/' : '/',
+	productionSourceMap: false,
+	pages,
+  before: app => {     
+    app.get('/', (req, res, next) => {
+      for(let i in pages){    //遍历项目链接
+        res.write(`<a target="_self" href="/${i}">/${i}</a></br>`);
+      }
+      res.end()
+    });
+  },
+	devServer: {
+		index: '/', 
+		open: process.platform === 'darwin',
+		host: '',
+		port: 9527,
+		https: false,
+		hotOnly: false,
+		proxy: {
+			'/xrf/': {
+				target: 'http://reg.tool.hexun.com/',
+				changeOrigin: true,
+				pathRewrite: {
+					'^/xrf': ''
+				}
+			},
+		}, // 设置代理
+		before: app => {     
+			app.get('/', (req, res, next) => {
+				for(let i in pages){
+					res.write(`<a target="_self" href="/${i}">/${i}</a></br>`);
+				}
+				res.end()
+			});
+			app.get('/goods/list', (req, res, next) => {  //mock数据
+				res.status(299).json(mock)
+			})
+		}
+	},
+	chainWebpack: config => {
+		config.module
+			.rule('images')
+			.use('url-loader')
+			.loader('url-loader')
+			.tap(options => {
+				// 修改它的选项...
+				options.limit = 100
+				return options
+			})
+		Object.keys(pages).forEach(entryName => {
+			config.plugins.delete(`prefetch-${entryName}`);
+		});
+		if(process.env.NODE_ENV === "production") {
+			config.plugin("extract-css").tap(() => [{
+				path: path.join(__dirname, "./dist"),
+				filename: "css/[name].[contenthash:8].css"
+			}]);
+		}
+	},
+	configureWebpack: config => {
+		//		if(process.env.NODE_ENV === "production") {
+		//			config.output = {
+		//				path: path.join(__dirname, "./dist"),
+		//				filename: "js/[name].[contenthash:8].js"			
+		//			};
+		//		}
+	}
+}
 
-2、axios请求封装（完成）
-
-3、cdn（完成）
-
-4、gzip（完成）
-
-5、eventBus（完成）
-
-6、路由守卫封装（完成）
-
-
-```
-<!-- cdn引用-暂时不用 -->
-    <% if (process.env.NODE_ENV === 'production') { %>
-      <% for(var css of htmlWebpackPlugin.options.cdn.css) { %>
-        <link href="<%=css%>" rel="preload" as="style">
-        <link rel="stylesheet" href="<%=css%>" as="style">
-      <% } %>
-      <% for(var js of htmlWebpackPlugin.options.cdn.js) { %>
-        <link href="<%=js%>" rel="preload" as="script">
-        <script src="<%=js%>"></script>
-      <% } %>
-    <% } %>
 ```

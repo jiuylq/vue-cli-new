@@ -1,14 +1,34 @@
 const path = require('path')
+let glob = require('glob')
 const TerserPlugin = require('terser-webpack-plugin')
 // const CompressionPlugin = require('compression-webpack-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 function resolve (dir) {
   return path.join(__dirname, './', dir)
 }
 
+function getEntry (globPath) {
+  let entries = {}
+  glob.sync(globPath).forEach(function (entry) {
+    var tmp = entry.split('/').splice(-3)
+    entries[tmp[1]] = {
+      entry: 'src/' + tmp[0] + '/' + tmp[1] + '/' + 'index.js',
+      template: 'src/' + tmp[0] + '/' + tmp[1] + '/' + 'index.html',
+      filename: tmp[1] + '.html'
+    }
+  })
+  return entries
+}
+
+let pages = getEntry('./src/pages/**?/*.html')
+
+console.log(pages)
+
 module.exports = {
   publicPath: '/',
+  pages,
+  productionSourceMap: false,
   transpileDependencies: [],
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
@@ -61,29 +81,29 @@ module.exports = {
     //   vuex: 'Vuex'
     // }
     // config.externals(externals)
-    const cdn = {
-      css: [
-        // element-ui css
-        '//unpkg.com/element-ui/lib/theme-chalk/index.css'
-      ],
-      js: [
-        // vue
-        '//cdn.staticfile.org/vue/2.5.22/vue.min.js',
-        // vue-router
-        '//cdn.staticfile.org/vue-router/3.0.2/vue-router.min.js',
-        // vuex
-        '//cdn.staticfile.org/vuex/3.1.0/vuex.min.js',
-        // axios
-        '//cdn.staticfile.org/axios/0.19.0-beta.1/axios.min.js',
-        // element-ui js
-        '//unpkg.com/element-ui/lib/index.js'
-      ]
-    }
-    config.plugin('html')
-      .tap(args => {
-        args[0].cdn = cdn
-        return args
-      })
+    // const cdn = {
+    //   css: [
+    //     // element-ui css
+    //     '//unpkg.com/element-ui/lib/theme-chalk/index.css'
+    //   ],
+    //   js: [
+    //     // vue
+    //     '//cdn.staticfile.org/vue/2.5.22/vue.min.js',
+    //     // vue-router
+    //     '//cdn.staticfile.org/vue-router/3.0.2/vue-router.min.js',
+    //     // vuex
+    //     '//cdn.staticfile.org/vuex/3.1.0/vuex.min.js',
+    //     // axios
+    //     '//cdn.staticfile.org/axios/0.19.0-beta.1/axios.min.js',
+    //     // element-ui js
+    //     '//unpkg.com/element-ui/lib/index.js'
+    //   ]
+    // }
+    // config.plugin('html')
+    //   .tap(args => {
+    //     args[0].cdn = cdn
+    //     return args
+    //   })
 
     // 代码切割
     // config.optimization.runtimeChunk({
@@ -131,30 +151,39 @@ module.exports = {
     //     .tap(args => { })
     //   // #endregion
     // }
+
+    // 开启打包可视化
     if (process.env.NODE_ENV === 'production') {
       // config
       //   .plugin('webpack-bundle-analyzer')
       //   .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
-      config.plugin('webpack-report')
-        .use(BundleAnalyzerPlugin, [{
-          analyzerMode: 'static'
-        }])
+      // config.plugin('webpack-report')
+      //   .use(BundleAnalyzerPlugin, [{
+      //     analyzerMode: 'static'
+      //   }])
     }
   },
   devServer: {
-    // open: true,
-    // host: '0.0.0.0',//如果是真机测试，就使用这个IP
-    // port: 8080,
-    // https: false,
-    // hotOnly: false,
-    // proxy: null, // 设置代理
-    // // proxy: {
-    // //     '/api': {
-    // //         target: '<url>',
-    // //         ws: true,
-    // //         changOrigin: true
-    // //     }
-    // // },
-    // before: app => {}
+    open: true,
+    host: 'localhost', // 如果是真机测试，就使用这个IP
+    port: 8080,
+    https: false,
+    hotOnly: false,
+    proxy: null, // 设置代理
+    // proxy: {
+    //     '/api': {
+    //         target: '<url>',
+    //         ws: true,
+    //         changOrigin: true
+    //     }
+    // },
+    before: app => {
+      app.get('/', (req, res, next) => {
+        for (let i in pages) {
+          res.write(`<a target="_self" href="/${i}">/${i}</a></br>`)
+        }
+        res.end()
+      })
+    }
   }
 }
