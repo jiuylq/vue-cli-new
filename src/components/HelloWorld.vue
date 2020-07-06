@@ -38,6 +38,14 @@ export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  created () {
+    this.dsfsfsf(1)
+  },
+  methods: {
+    dsfsfsf (a) {
+      console.log(a)
+    }
   }
 }
 </script>
