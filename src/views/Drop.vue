@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { cardDragger } from '@/compoments/carddragger'
+import cardDragger from '@/components/carddrgger/index.vue'
 export default {
   components: {
     cardDragger

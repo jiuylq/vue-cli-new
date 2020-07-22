@@ -5,12 +5,13 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "new": "plop"
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "carddragger": "^0.3.6",
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
@@ -35,6 +36,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
     "mockjs": "^1.1.0",
+    "plop": "^2.7.3",
     "svg-sprite-loader": "^5.0.0",
     "terser-webpack-plugin": "^3.0.2",
     "vue-template-compiler": "^2.6.11",
