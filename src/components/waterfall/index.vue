@@ -7,6 +7,7 @@
         </template>
         <template v-for="(item, index) in columnList1">
             <!-- 第一列瀑布流内容... -->
+          {{`${index} + ${item}`}}
         </template>
     </div>
     <!-- 第二列 -->
@@ -16,6 +17,7 @@
         </template>
         <template v-for="(item, index) in columnList2">
             <!-- 第二列瀑布流内容... -->
+          {{`${index} + ${item}`}}
         </template>
     </div>
     <!-- 第三列 -->
@@ -25,6 +27,7 @@
         </template>
         <template v-for="(item, index) in columnList3">
             <!-- 第三列瀑布流内容... -->
+          {{`${index} + ${item}`}}
         </template>
     </div>
     <!-- 第四列 -->
@@ -34,6 +37,7 @@
         </template>
         <template v-for="(item, index) in columnList4">
             <!-- 第四列瀑布流内容... -->
+          {{`${index} + ${item}`}}
         </template>
     </div>
     <!-- 合并块非瀑布流内容 -->
@@ -74,6 +78,7 @@ export default {
   },
   watch: {
     renderIndex (value) {
+      let renderMinTop, winHeight, loadedItemNum, canShowItemNum
       // 当前滚动条高度
       const scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
       // 最小列高度 - 滚动高度 < 可视区域高的的1.5倍
@@ -93,7 +98,7 @@ export default {
       return new Promise((reslove) => {
         let minIndex = 0
         for (let i in arr) {
-          if (arr[i] == value) {
+          if (arr[i] === value) {
             minIndex = i
             reslove(minIndex)
           }
@@ -101,7 +106,8 @@ export default {
       })
     },
     scroll () {
-    // 当前滚动条高度
+      let lastScrollTop, winHeight
+      // 当前滚动条高度
       const scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
 
       // 底部检测高度
@@ -122,7 +128,8 @@ export default {
       }
     },
     renderWaterfall () {
-    // 如果还没有数据、所有数据已经渲染完成、正在渲染则不进行渲染计算操作
+      let columnsHeight, minHeight
+      // 如果还没有数据、所有数据已经渲染完成、正在渲染则不进行渲染计算操作
       if (this.itemList.length === 0 || this.renderIndex >= this.itemList.length - 1 || this.isRendering) {
         if (this.renderIndex === this.feedList.length - 1 && !this._requesting && !this.isEnd) {
           this.getData()
