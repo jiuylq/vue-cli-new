@@ -18,19 +18,11 @@ export default {
   },
   methods: {
     readFileToJson(files) {
-      // let jsonData = []
-      // if (this.multiple) {
-      //   let len = files.length
-      //   this.loading = true
-      //   for (let i = 0; i < len; i++) {
-      //     jsonData.push(this.fileReaderHandle(files[i]))
-      //   }
-      // } else {
-      //   jsonData.push(this.fileReaderHandle(files[0]))
-      // }
       let result = {
         headers: [],
-        xlsxdata: []
+        xlsxdata: [],
+        merges: [],
+        ref: []
       }
       let len = files.length
       let loadnum = 0
@@ -41,18 +33,21 @@ export default {
           const data = e.target.result;
           const workbook = XLSX.read(data, { type: 'array' })
           console.log(workbook)
-          if (this.readMulSheet) { // 读取多表'sheet1'，'sheet2'等
-            result.xlsxdata = workbook.SheetNames.map(item => {
-              const worksheet = workbook.Sheets[item]
-              this.isGetHeaderRow && result.headers.push(this.getHeaderRow(worksheet));
-              return XLSX.utils.sheet_to_json(worksheet);
-            })
-          } else {
-            const firstSheetName = workbook.SheetNames[0]
-            const worksheet = workbook.Sheets[firstSheetName]
-            result.headers.push(this.getHeaderRow(worksheet));
-            result.xlsxdata.push(XLSX.utils.sheet_to_json(worksheet))
-          }
+          // if (this.readMulSheet) { // 读取多表'sheet1'，'sheet2'等
+          result.xlsxdata = workbook.SheetNames.map(item => {
+            const worksheet = workbook.Sheets[item]
+            // console.log(XLSX.utils.sheet_to_html(worksheet))
+            this.isGetHeaderRow && result.headers.push(this.getHeaderRow(worksheet));
+            result.ref.push(worksheet['!ref'])
+            result.merges.push(worksheet['!merges'])
+            return XLSX.utils.sheet_to_json(worksheet);
+          })
+          // } else {
+          //   const firstSheetName = workbook.SheetNames[0]
+          //   const worksheet = workbook.Sheets[firstSheetName]
+          //   result.headers.push(this.getHeaderRow(worksheet));
+          //   result.xlsxdata.push(XLSX.utils.sheet_to_json(worksheet))
+          // }
           loadnum++
           if (loadnum === len) {
             typeof this.filesOnLoad === 'function' && this.filesOnLoad(result)
@@ -62,34 +57,6 @@ export default {
         }
         reader.readAsArrayBuffer(files[i])
       }
-      // return xlsxdata;
-    },
-    fileReaderHandle(File) {
-      let result = {
-        headers: [],
-        xlsxdata: []
-      }
-      const reader = new FileReader()
-      reader.onload = e => {
-        const data = e.target.result;
-        const workbook = XLSX.read(data, { type: 'array' })
-        // console.log(workbook)
-        if (this.readMulSheet) { // 读取多表'sheet1'，'sheet2'等
-          result.xlsxdata = workbook.SheetNames.map(item => {
-            const worksheet = workbook.Sheets[item]
-            this.isGetHeaderRow && result.headers.push(this.getHeaderRow(worksheet));
-            return XLSX.utils.sheet_to_json(worksheet);
-          })
-        } else {
-          const firstSheetName = workbook.SheetNames[0]
-          const worksheet = workbook.Sheets[firstSheetName]
-          result.headers.push(this.getHeaderRow(worksheet));
-          result.xlsxdata.push(XLSX.utils.sheet_to_json(worksheet))
-        }
-      }
-      reader.readAsArrayBuffer(File)
-      // console.log(result)
-      return result
     },
     getHeaderRow (sheet) { // 获取sheet头
       const headers = []
@@ -97,19 +64,27 @@ export default {
         return headers
       }
       const range = XLSX.utils.decode_range(sheet['!ref'])
-      console.log(range)
+      // console.log(range)
       let C
       const R = range.s.r
-      console.log(R)
+      // console.log(R)
       /* start in the first row */
       for (C = range.s.c; C <= range.e.c; ++C) { /* walk every column in the range */
         const cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })]
+        // console.log(cell)
         /* find the cell in the first row */
         let hdr = 'UNKNOWN ' + C // <-- replace with your desired default
         if (cell && cell.t) hdr = XLSX.utils.format_cell(cell)
         headers.push(hdr)
       }
       return headers
+    },
+    // 读取拥有合并单元格的表格信息
+    getMergeXlsxData(sheet) {
+      // sheet['!ref']：表示所有单元格的范围，例如从A1到F8则记录为A1:F8；
+      // sheet[!merges]：存放一些单元格合并信息，是一个数组，每个数组由包含s和e构成的对象组成，s表示开始，e表示结束，r表示行，c表示列；
+      // 注意单元格第一位为{c: 0, r: 0}
+      return sheet['!merges']
     },
     jsonToExcelOrBolb (json) {
       // 如果使用二进制流格式的话useBuffer=true，将默认返回数据流
