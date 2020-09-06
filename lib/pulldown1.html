@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+      #refreshContainer li {
+        background-color: #eee;
+        margin-bottom: 1px;
+        padding: 20px 10px;
+      }
+
+      .refreshText {
+        position: absolute;
+        width: 100%;
+        line-height: 50px;
+        text-align: center;
+        left: 0;
+        top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="refreshText"></p>
+    <ul id="refreshContainer">
+      <li>111</li>
+      <li>222</li>
+      <li>333</li>
+      <li>444</li>
+      <li>555</li>
+      <li>111</li>
+      <li>222</li>
+      <li>333</li>
+      <li>444</li>
+      <li>555</li>
+      <li>111</li>
+      <li>222</li>
+      <li>333</li>
+      <li>444</li>
+      <li>555</li>
+    </ul>
+    <script>
+      (function(window, document, undefined) {
+        var upDownRefresh = function(box, text) {
+          var _element = document.getElementById(box),
+            _refreshText = document.querySelector(text),
+            _startPos = 0,
+            _transitionHeight = 0;
+          _element.addEventListener('touchstart', function(e) {
+            console.log('初始位置：', e.touches[0].pageY);
+            _startPos = e.touches[0].pageY;
+            _element.style.position = 'relative';
+            _element.style.transition = 'transform 0s';
+          }, false);
+          _element.addEventListener('touchmove', function(e) {
+            // console.log('当前位置：', e.touches[0].pageY);
+            _transitionHeight = e.touches[0].pageY - _startPos;
+            console.log(_transitionHeight)
+            if (_transitionHeight > 0 && _transitionHeight < 1000) {
+              _refreshText.innerText = '下拉刷新';
+              _element.style.transform = 'translateY(' + _transitionHeight + 'px)';
+            }
+          }, false);
+          _element.addEventListener('touchend', function(e) {
+            if (_transitionHeight > 55) {
+              _refreshText.innerText = '更新中...';
+              console.log("触发更新")
+            }
+            _element.style.transition = 'transform 0.5s ease 1s';
+            _element.style.transform = 'translateY(0px)';
+          }, false);
+          window.onscroll = function() {
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+            var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+            if (scrollTop + windowHeight == scrollHeight) {
+              console.log('触底加载更多')
+            }
+          }
+        };
+        window.upDownRefresh = upDownRefresh;
+      })(window, document);
+      new upDownRefresh("refreshContainer", ".refreshText")
+    </script>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+body {
+    -webkit-text-size-adjust: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0)
+    -webkit-overflow-scrolling:touch;
+    overflow-scrolling:touch;
+    -webkit-touch-callout:none;
+}
+input {
+  -webkit-appearance:none;
+}
+
+/*清除浮动*/
+.clearfix:after {
+  display: block;
+  clear: both;
+  content: '';
+  visibility: hidden;
+  height: 0;
+}
+.clearfix {
+  zoom: 1;
+}
+
+@mixin ellipsis($line:1) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  @if $line > 1 { //与@if的使用
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $line;
+    // word-break: break-all;
+  } @else {
+    display: -webkit-box;
+    white-space: nowrap;
+  }
+}
+
+@mixin dot-line {
+  display: flex;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+@mixin _prefixDpr($selector, $position: 'top', $pseudo: 'before', $dpr: '2') {
+  @media only screen and (-webkit-min-device-pixel-ratio:$dpr) {
+    @if $dpr == '1.5' {
+      #{$selector}:#{$pseudo} {
+        -webkit-transform: scaleY(.7);
+        transform: scaleY(.7);
+        @if $position == 'top' {
+          -webkit-transform-origin: left top;
+        } @else if $position == 'bottom' {
+          -webkit-transform-origin: left bottom;
+        }
+      }
+    } @else if $dpr == '2' {
+      #{$selector}:#{$pseudo} {
+        -webkit-transform: scaleY(.5);
+        transform: scaleY(.5);
+        @if $position == 'top' {
+          -webkit-transform-origin: left top;
+        } @else if $position == 'bottom' {
+          -webkit-transform-origin: left bottom;
+        }
+      }
+    } @else if $dpr == '3' {
+      #{$selector}:#{$pseudo} {
+        -webkit-transform: scaleY(.3);
+        transform: scaleY(.3);
+        @if $position == 'top' {
+          -webkit-transform-origin: left top;
+        } @else if $position == 'bottom' {
+          -webkit-transform-origin: left bottom;
+        }
+      }
+    }
+  }
+}
+
+@mixin onepx($selector, $position: 'top',$pseudo: 'before', $color: #666) {
+    #{$selector}:#{$pseudo} {
+      content: ' ';
+      display: block;
+      border-top: 1px solid $color;
+      position: absolute;
+      left: 0;
+      right: 0;
+    }
+    #{$selector} {
+        position: relative;
+        &:#{$pseudo} {
+          @if #{$position} == 'top'{
+            top: 0;
+          } @else if #{$position} == 'bottom' {
+            bottom: 0;
+          }
+        }
+    }
+    @include _prefixDpr($selector, $position, $pseudo, '1.5');
+    @include _prefixDpr($selector, $position, $pseudo, '2');
+    @include _prefixDpr($selector, $position, $pseudo, '3');
+}
+
+@mixin onepx($color: #C7C7C7, $direction: 'bottom') {
+  content: " ";
+  position: absolute;
+  color: $color;
+  @if $direction == 'top'{
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 1px;
+    border-top: 1px solid $color;
+    transform-origin: 0 0;
+    transform: scaleY(0.5);
+  } @else if $direction == 'bottom' {
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 1px solid $color;
+    transform-origin: 0 100%;
+    transform: scaleY(0.5);
+  } @else if $direction == 'left' {
+    left: 0;
+    top: 0;
+    width: 1px;
+    bottom: 0;
+    border-left: 1px solid $color;
+    transform-origin: 0 0;
+  } @else if $direction == 'right' {
+    right: 0;
+    top: 0;
+    width: 1px;
+    bottom: 0;
+    border-right: 1px solid $color;
+    transform-origin: 100% 0;
+  }
+}
+// https://mp.weixin.qq.com/s/0eHZPNmt8UyaxSzMNjhS9w

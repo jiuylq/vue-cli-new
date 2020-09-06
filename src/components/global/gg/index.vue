@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { A } from '@/api/article'
+// import { A } from '@/api/article'
 export default {
   name: 'gg',
   props: {
@@ -15,11 +15,11 @@ export default {
   created () {
   },
   mounted () {
-    let aa = 1
-    A({ user: 1 }).then(data => {
-      console.log(data)
-    })
-    console.log(aa)
+    // let aa = 1
+    // A({ user: 1 }).then(data => {
+    //   console.log(data)
+    // })
+    // console.log(aa)
   },
   methods: {
   }

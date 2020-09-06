@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      font-size: 40px;
+    }
+
+    .time1 {
+      display: inline-block;
+      background: linear-gradient(to right, #a6ffcb, #1fa2ff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .time2 {
+      position: relative;
+      height: 50px;
+      color: #a6ffcb;
+    }
+
+    .time2:before {
+      content: attr(time);
+      position: absolute;
+      z-index: 10;
+      color: #1fa2ff;
+      -webkit-mask: linear-gradient(to left, #1fa2ff, transparent);
+    }
+
+    #dol {
+      padding: 5px 10px;
+      margin: 0;
+      border:1px solid #cecece;
+      background: #fff;
+    }
+    #dol2 {
+      padding: 5px 10px;
+      margin: 0;
+      border:1px solid #cecece;
+      background: #fff;
+    }
+    .dol {
+      padding: 5px 10px;
+      margin: 0;
+      border:1px solid #cecece;
+      background: #fff;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="time1"></div>
+  <div class="time2" time="ttttt"></div>
+  <button type="button" id="dol">form</button>
+  <button type="button" id="dol2">open</button>
+  <button type="button" id="dol3" class="dol">iframe</button>
+  <button type="button" id="dol4" class="dol">location</button>
+  <button type="button" id="dol5" class="dol">a</button>
+  <button type="button" id="dol6" class="dol">blob</button>
+  <button type="button" id="dol7" class="dol">axios</button>
+  <script src="./node_modules/axios/dist/axios.min.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+    var time1 = document.querySelector('.time1');
+    var time2 = document.querySelector('.time2');
+    var dol = document.getElementById('dol');
+    var dol2 = document.getElementById('dol2');
+    var dol3 = document.getElementById('dol3');
+    var dol4 = document.getElementById('dol4');
+    var dol5 = document.getElementById('dol5');
+    var dol6 = document.getElementById('dol6');
+	var dol7 = document.getElementById('dol7');
+    function getLtime() {
+      var time = new Date().toLocaleString();
+      time1.innerText = time;
+      //        time2.innerText = time;
+      time2.setAttribute('time', time)
+
+      //         window.requestAnimationFrame(function() {
+      //            time1.innerText = time;
+      //            time2.setAttribute('time', time) 
+      //         })
+    }
+
+    setInterval(getLtime, 1000);
+    dol.onclick=function(e) {
+      var dom = document.createElement('form');
+      dom.method = 'get';
+      dom.action = './config.zip';
+      document.body.appendChild(dom)
+      dom.submit();
+      document.body.removeChild(dom);
+    }
+    dol2.onclick=function(e) {
+      window.open('./files/uTools.rar', '_self')
+    }
+    dol3.onclick=function(e) {
+      // download('./files/uTools.rar')
+	  download('./files/a.pdf')
+    }
+    dol4.onclick=function(e) {
+      window.location.href = './files/uTools.rar'
+    }
+    dol5.onclick=function(e) {
+      var eleLink = document.createElement('a')
+      eleLink.download = 'uTools.rar'
+      eleLink.style.display = 'none'
+      eleLink.href = './files/uTools.rar'
+      // 触发点击
+//       document.body.appendChild(eleLink)
+      eleLink.click()
+      // 然后移除
+//       document.body.removeChild(eleLink)
+    }
+    function download(url){
+        var iframe = document.createElement("iframe")
+        iframe.style.display = "none";
+        iframe.src = url;
+        document.body.appendChild(iframe);
+        setTimeout(function() {
+            document.body.removeChild(iframe);
+        }, 500);
+    }
+    function xBlob(content, filename) {
+        var a = document.createElement('a')
+        var blob = new Blob([content])
+        var url = window.URL.createObjectURL(blob)
+        a.href = url
+        a.download = filename
+        a.click()
+        window.URL.revokeObjectURL(url)
+    }
+    var d = []
+          , c = {};
+        function g() {
+            var j = document.createElement("iframe");
+            d.push(j);
+            j.style.cssText = "position:absolute;left:0;top:0;width:0;height:0;visibility:hidden;";
+            j.frameBorder = "0";
+            document.body.appendChild(j);
+            return j
+        }
+
+        const config = {
+  name: 'lsqy',
+  password: 'yourpassword',
+  ak: 'XXXXXXXXXX',
+  sk: 'XXXXXXXXXX'
+}
+
+const blobContent = new Blob(
+  [JSON.stringify(config, null, 2)],
+  {type : 'application/json'}
+);
+
+const blobUrl = window.URL.createObjectURL(blobContent)
+dol6.onclick=function(e) {
+    downloadFileByBlob(blobUrl, 'config.json')
+  }
+
+
+function downloadFileByBlob(blobUrl, filename) {
+  const eleLink = document.createElement('a')
+  eleLink.download = filename
+  eleLink.style.display = 'none'
+  eleLink.href = blobUrl
+  // 触发点击
+  document.body.appendChild(eleLink)
+  eleLink.click()
+  // 然后移除
+  document.body.removeChild(eleLink)
+}
+	dol7.onclick=function(e) {
+	axios({
+	  method: 'get',
+	  url: './images/test.png',
+	  responseType: 'blob'
+	})
+	  .then(function (response) {
+		console.log(response)
+		xxBlob(response.data, 'tt.png')
+	  });
+	}
+	function xxBlob(content, filename) {
+	    var a = document.createElement('a')
+	    // var blob = new Blob([content])
+	    var url = window.URL.createObjectURL(content)
+	    a.href = url
+	    a.download = filename
+	    a.click()
+	    window.URL.revokeObjectURL(url)
+	}
+  </script>
+</body>
+
+</html>

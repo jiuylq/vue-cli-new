@@ -3,6 +3,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+// rem
+import 'amfe-flexible'
+
 // import eventBus from './utils/eventBus'
 // Vue.use(eventBus)
 
@@ -14,6 +17,11 @@ import '@/components/componentRegister.js'
 
 // svg
 import './icons'
+
+// fastclick 解决移动端点击300ms问题
+import fastclick from 'fastclick'
+
+fastclick.attach(document.body)
 
 Vue.config.productionTip = false
 
