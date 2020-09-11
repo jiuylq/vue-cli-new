@@ -1,4 +1,5 @@
 import XLSX from 'xlsx'
+const ExcelJS = require('exceljs');
 export default {
   data() {
     return {
@@ -13,10 +14,54 @@ export default {
       bookType: 'xlsx', // 要生成的文件类型
       buffertype: 'application/octet-stream', // 生成文件流的格式MIME
       useBuffer: false, // 使用Bolb生成的文件流
-      xlsxJson: {}
+      xlsxJson: {},
+      inputfile: null,
+      excelData: null
     }
   },
+  mounted() {
+    // console.log(ExcelJS)
+  },
   methods: {
+    async toExcelWb(data) {
+      console.log('toExcelWb')
+      const workbook = new ExcelJS.Workbook()
+      // await workbook.xlsx.readFile(data)
+      // await workbook.xlsx.read(data);
+      await workbook.xlsx.load(data);
+      const sheet = workbook.addWorksheet('My Sheet', { properties: { tabColor: { argb: 'FFC0000' } } })
+      sheet.columns = [
+        { header: 'Id', key: 'id', width: 10 },
+        { header: 'Name', key: 'name', width: 32 },
+        { header: 'D.O.B.', key: 'dob', width: 10, outlineLevel: 1 }
+      ];
+      sheet.addRow({ id: 2, name: 'Jane Doe', dob: new Date(1965, 1, 7) })
+      sheet.getCell('A1').fill = {
+        type: 'pattern',
+        pattern: 'darkTrellis',
+        fgColor: { argb: 'FFFFFF00' },
+        bgColor: { argb: 'FF0000FF' }
+      };
+      const buffer = await workbook.xlsx.writeBuffer();
+      // let ab = Buffer.from(buffer, "binary");
+      console.log(buffer)
+      const blob = new Blob([buffer], {
+        type: this.buffertype
+      })
+      this.downLoad(blob)
+    },
+    downLoad(blob) {
+      const link = document.createElement("a");
+      const body = document.querySelector("body");
+      link.href = window.URL.createObjectURL(blob); // 创建对象url
+      link.download = this.writeName;
+      // fix Firefox
+      link.style.display = "none";
+      body.appendChild(link);
+      link.click();
+      body.removeChild(link);
+      window.URL.revokeObjectURL(link.href);
+    },
     readFileToJson(files) {
       let result = {
         headers: [],
@@ -24,6 +69,7 @@ export default {
         merges: [],
         ref: []
       }
+      // this.toExcelWb(files[0])
       let len = files.length
       let loadnum = 0
       this.loading = true
@@ -31,8 +77,12 @@ export default {
         const reader = new FileReader()
         reader.onload = e => {
           const data = e.target.result;
+          console.log(data)
+          i === 0 && this.toExcelWb(data)
           const workbook = XLSX.read(data, { type: 'array' })
-          console.log(workbook)
+          // console.log(workbook)
+          this.inputfile = workbook
+          // XLSX.writeFile(workbook, 'xxx.xlsx')
           // if (this.readMulSheet) { // 读取多表'sheet1'，'sheet2'等
           result.xlsxdata = workbook.SheetNames.map(item => {
             const worksheet = workbook.Sheets[item]
@@ -49,11 +99,11 @@ export default {
           //   result.xlsxdata.push(XLSX.utils.sheet_to_json(worksheet))
           // }
           loadnum++
-          if (loadnum === len) {
-            typeof this.filesOnLoad === 'function' && this.filesOnLoad(result)
-            this.xlsxJson = result
-            this.loading = false
-          }
+          // if (loadnum === len) {
+          //   typeof this.filesOnLoad === 'function' && this.filesOnLoad(result)
+          //   this.xlsxJson = result
+          //   this.loading = false
+          // }
         }
         reader.readAsArrayBuffer(files[i])
       }
@@ -96,6 +146,14 @@ export default {
         let wsname = this.writeSheetName[i] ? this.writeSheetName[i] : 'Sheet' + (i + 1)
         XLSX.utils.book_append_sheet(wb, ws, wsname)
       }
+      // console.log()
+      for (let i in this.inputfile) {
+        if (i !== 'Sheets') {
+          wb[i] = this.inputfile[i]
+        }
+      }
+      // wb['Styles'] = this.inputfile['Styles']
+      // XLSX.utils.book_append_sheet(wb, this.inputfile['Styles'], 'Styles')
       let wbopts = {
         bookType: this.bookType, // 要生成的文件类型
         bookSST: false,

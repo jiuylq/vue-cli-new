@@ -15,6 +15,7 @@ export default {
   },
   data () {
     return {
+      inputfile: null,
       fileName: '', // 文件名
       loading: false, // 加载中
       isWrite: false, // 是否开启下载
@@ -53,6 +54,7 @@ export default {
         console.log(e)
         const data = e.target.result
         const workbook = XLSX.read(data, { type: 'array' })
+        this.inputfile = workbook
         console.log(workbook)
         const firstSheetName = workbook.SheetNames[0]
         const worksheet = workbook.Sheets[firstSheetName]
@@ -117,6 +119,8 @@ export default {
         bookSST: false,
         type: 'binary' // 二进制格式
       }
+      console.log(this.inputfile['Styles'])
+      XLSX.utils.book_append_sheet(wb, this.inputfile['Styles'], 'Styles')
       console.log(wb)
       var wbout = XLSX.write(wb, opts)
       console.log(wbout)
@@ -138,7 +142,7 @@ export default {
       console.log(form)
       console.log(form.get('file'))
       console.log(blob)
-      // XLSX.writeFile(wb, filename)
+      XLSX.writeFile(wb, 'test.xlsx')
 
       const reader = new FileReader()
       reader.onload = e => {
