@@ -35,7 +35,7 @@ https://juejin.im/post/5c4a6fcd518825469414e062#heading-22
 https://juejin.im/post/5d130b9a518825670124a721#heading-6
 https://juejin.im/post/5d8180f96fb9a06b04723363
 https://blog.csdn.net/qq_39953537/article/details/102759821?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight
-
+[取消重复请求](https://github.com/verymuch/very-axios)
 
 1、全局自动注册组件（完成）
 
