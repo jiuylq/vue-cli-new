@@ -1,14 +1,8 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import a from './moduls/a'
-import b from './moduls/b'
-
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+export default {
+  namespaced: true,
   state: {
-    count: 1,
-    num: 1
+    count: 3,
+    num: 3
   },
   getters: { // 可以认为是 store 的计算属性
     count: state => state.count,
@@ -37,21 +31,18 @@ export default new Vuex.Store({
     // updateCount (context) { // context
     //   context.commit('UPDATECOUNT')
     // },
-    actionA ({ commit }) {
+    actionA ({ commit }, data) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          commit('UPDATENUM')
+          commit('UPDATENUM', data)
           resolve()
         }, 500)
       })
     },
-    async updateCount ({ dispatch, commit }, data) { // context
+    async updateCount ({ dispatch, commit, rootState }, data) { // context
       await dispatch('actionA', data)
+      // commit('UPDATECOUNT', data + rootState.count)
       commit('UPDATECOUNT', data)
     }
-  },
-  modules: {
-    aa: a, // 不开启命名空间
-    bb: b // 开启命名空间
   }
-})
+}
