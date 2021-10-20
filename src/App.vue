@@ -6,11 +6,20 @@
       <router-link to="/drop">Drop</router-link>
     </div>
     <gg :msg="'ggggg'" />
+    <sidebar />
     <router-view/>
   </div>
 </template>
-
-<style>
+<script>
+import sidebar from '@/layout/index.vue'
+export default {
+  name: 'Home',
+  components: {
+    sidebar
+  }
+}
+</script>
+<style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+// import '@/styles/index.scss' // global css
+
 // import eventBus from './utils/eventBus'
 // Vue.use(eventBus)
 
@@ -14,6 +16,9 @@ import '@/components/componentRegister.js'
 
 // svg
 import './icons'
+import ElementUI from 'element-ui';
+
+Vue.use(ElementUI);
 
 Vue.config.productionTip = false
 

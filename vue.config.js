@@ -8,6 +8,7 @@ function resolve (dir) {
 }
 
 module.exports = {
+  lintOnSave: false,
   publicPath: '/',
   transpileDependencies: [],
   configureWebpack: config => {
