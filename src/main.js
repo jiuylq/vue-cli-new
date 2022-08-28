@@ -14,11 +14,20 @@ import store from './store'
 // 自动注册全局组件
 import '@/components/componentRegister.js'
 
+// eslint-disable-next-line no-unused-vars
+import filters from './filters'
+
+// 自定义指令
+import Directives from './directives'
+
 // svg
 import './icons'
 import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css'
 
 Vue.use(ElementUI);
+Vue.use(filters)
+Vue.use(Directives)
 
 Vue.config.productionTip = false
 

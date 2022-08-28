@@ -21,6 +21,11 @@ const routes = [
     path: '/drop',
     name: 'Drop',
     component: () => import(/* webpackChunkName: "drop" */ '../views/Drop.vue')
+  },
+  {
+    path: '/table',
+    name: 'Table',
+    component: () => import(/* webpackChunkName: "drop" */ '../views/table.vue')
   }
 ]
 

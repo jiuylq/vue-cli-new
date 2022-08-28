@@ -3,10 +3,11 @@
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
-      <router-link to="/drop">Drop</router-link>
+      <router-link to="/drop">Drop</router-link> |
+      <router-link to="/table">table</router-link>
     </div>
-    <gg :msg="'ggggg'" />
-    <sidebar />
+    <!-- <gg :msg="'ggggg'" /> -->
+    <!-- <sidebar /> -->
     <router-view/>
   </div>
 </template>
