@@ -4,7 +4,11 @@ import router from './router'
 import store from './store'
 
 // rem
-import 'amfe-flexible'
+// import 'amfe-flexible'
+import { flexibleDashboard } from '@/utils/rem'
+
+// 初始化rem
+flexibleDashboard() // 默认比例16/9
 
 // import eventBus from './utils/eventBus'
 // Vue.use(eventBus)

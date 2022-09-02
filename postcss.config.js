@@ -4,7 +4,7 @@ module.exports = {
     //   browsers: ['Android >= 4.0', 'iOS >= 7']
     // },
     'postcss-pxtorem': {
-      rootValue: 75, // (Number | Function) 结果为：设计稿元素尺寸/16，比如元素宽320px,最终页面会换算成 20rem
+      rootValue: 192, // 196? // (Number | Function) 结果为：设计稿元素尺寸/16，比如元素宽320px,最终页面会换算成 20rem
       propList: ['*'], // (Array) 'font', 'font-size', 'line-height', 'letter-spacing'
       unitPrecision: 5, // (Number) 单位转换后保留的精度
       selectorBlackList: [], // (Array) 要忽略的选择器，保留为px
