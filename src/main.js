@@ -7,9 +7,6 @@ import store from './store'
 // import 'amfe-flexible'
 import { flexibleDashboard } from '@/utils/rem'
 
-// 初始化rem
-flexibleDashboard() // 默认比例16/9
-
 // import eventBus from './utils/eventBus'
 // Vue.use(eventBus)
 
@@ -23,9 +20,12 @@ import '@/components/componentRegister.js'
 import './icons'
 
 // fastclick 解决移动端点击300ms问题
-import fastclick from 'fastclick'
+// import fastclick from 'fastclick'
 
-fastclick.attach(document.body)
+// fastclick.attach(document.body)
+
+// 初始化rem
+flexibleDashboard() // 默认比例16/9
 
 Vue.config.productionTip = false
 
